@@ -14,8 +14,7 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void createUsersTable() {
-        String checkTableSQL = "SHOW TABLES LIKE 'Users'";
-        String createTableSQL = "CREATE TABLE Users("
+        String createTableSQL = "CREATE TABLE IF NOT EXISTS Users("
                 + "id BIGINT NOT NULL AUTO_INCREMENT,"
                 + "name VARCHAR(30) NOT NULL,"
                 + "lastName VARCHAR(30) NOT NULL,"
@@ -23,11 +22,10 @@ public class UserDaoJDBCImpl implements UserDao {
                 + "PRIMARY KEY (id)"
                 + ")";
         try (Connection connection = Util.getConnection();
-             Statement statement = connection.createStatement()) {
-             ResultSet resultSet = statement.executeQuery(checkTableSQL);
-            if (!resultSet.next()) {
-                statement.execute(createTableSQL);
-            }
+             PreparedStatement preparedStatement = connection.prepareStatement(createTableSQL)) {
+            connection.setAutoCommit(false);
+            preparedStatement.executeUpdate();
+            connection.commit();
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
@@ -35,13 +33,12 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void dropUsersTable() {
-        String checkTableSQL = "SHOW TABLES LIKE 'Users'";
-        String dropTableSQL = "DROP TABLE Users";
+        String dropTableSQL = "DROP TABLE IF EXISTS Users";
         try (Connection connection = Util.getConnection();
             Statement statement = connection.createStatement()) {
-            ResultSet resultSet = statement.executeQuery(checkTableSQL);
-            if (resultSet.next()) {
-                statement.execute(dropTableSQL);
+            int rowsAffected = statement.executeUpdate(dropTableSQL);
+            if (rowsAffected > 0) {
+                System.out.println("Таблица Users была успешно удалена!");
             }
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
@@ -54,10 +51,12 @@ public class UserDaoJDBCImpl implements UserDao {
         String saveUserSQL = "INSERT INTO Users (name, lastName, age) VALUES (?, ?, ?)";
         try (Connection connection = Util.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(saveUserSQL)) {
+            connection.setAutoCommit(false);
             preparedStatement.setString(1, name);
             preparedStatement.setString(2, lastName);
             preparedStatement.setByte(3, age);
             preparedStatement.executeUpdate();
+            connection.commit();
             System.out.println("User с именем - "+ name +" добавлен в базу данных ");
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
