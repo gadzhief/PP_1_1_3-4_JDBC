@@ -22,25 +22,5 @@ public class Util {
         return DriverManager.getConnection(URL, USERNAME, PASSWORD);
     }
 
-//    public static SessionFactory buildSessionFactory() {
-//        try {
-//            Class.forName(DRIVER_CLASS_NAME);
-//            Configuration configuration = new Configuration();
-//            configuration.setProperty("hibernate.connection.url", URL);
-//            configuration.setProperty("hibernate.connection.username", USERNAME);
-//            configuration.setProperty("hibernate.connection.password", PASSWORD);
-//            configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL8Dialect");
-//
-//            configuration.addAnnotatedClass(Util.class);
-//
-//            ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
-//
-//            return configuration.buildSessionFactory(serviceRegistry);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            throw new ExceptionInInitializerError(e);
-//        }
-//    }
-
 
 }
